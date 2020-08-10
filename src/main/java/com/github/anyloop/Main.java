@@ -1,7 +1,7 @@
 /*
  * Main.java
  * 
- * Copyright 2020 Thomas Reiter <tom65536@web.de>
+ * Copyright 2020 Thomas Reiter
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,13 @@
 
 package com.github.anyloop;
 
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.anyloop.chassis.ClassHelper;
+import com.github.anyloop.chassis.ConfigurationException;
 import com.github.anyloop.chassis.Configurator;
 import com.github.anyloop.chassis.ConfigurableRunnable;
 import com.github.anyloop.chassis.DefaultConfigurator;
@@ -56,51 +60,39 @@ public final class Main {
      * @since 0.1.0
      */
     public static void main(final String[] args) {
-
+        Properties properties = ClassHelper.getClassPathProperties(
+            Main.class,
+            "/com/github/anyloop/COPYING.properties");
         logger.debug("Program started");
 
         DefaultConfigurator configurator = new DefaultConfigurator(args);
         configurator.run(new ConfigurableRunnable() {
 
-                @Override
-                public void init(final Configurator c) { }
+            @Override
+            public void init(final Configurator c) { }
 
-                @Override
-                public void run() {
-                    System.out.println(getName() + " " + getVersion());
-                    System.out.println("Licensed under the EUPL");
-                }
+            @Override
+            public void run() {
+                final String notice = String.format(
+                    properties.getProperty("copyright"),
+                    getName() + " " + getVersion(),
+                    properties.getProperty("year"),
+                    properties.getProperty("author"));
+                System.out.println(notice);
+            }
 
-                @Override
-                public void terminate() { }
+            @Override
+            public void terminate() { }
 
-                @Override
-                public synchronized String getVersion() {
-                    String version = null;
-                    Package aPackage = Main.class.getPackage();
-                    if (aPackage != null) {
-                        version = aPackage.getImplementationVersion();
+            @Override
+            public synchronized String getVersion() {
+                return ClassHelper.getVersion(Main.class);
+            }
 
-                        if (version == null) {
-                            version = aPackage.getSpecificationVersion();
-                        }
-                    }
-                    return version;
-                }
-
-                @Override
-                public synchronized String getName() {
-                    String title = null;
-                    Package aPackage = Main.class.getPackage();
-                    if (aPackage != null) {
-                        title = aPackage.getImplementationTitle();
-
-                        if (title == null) {
-                            title = aPackage.getSpecificationTitle();
-                        }
-                    }
-                    return title;
-                }
-            });
+            @Override
+            public synchronized String getName() {
+                return ClassHelper.getName(Main.class);
+            }
+        });
     }
 }

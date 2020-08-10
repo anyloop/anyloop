@@ -1,7 +1,7 @@
 /*
  * DefaultConfigurator.java
  *
- * Copyright 2020 Thomas Reiter <tom65536@web.de>
+ * Copyright 2020 Thomas Reiter
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,43 +100,19 @@ public class DefaultConfigurator implements Configurator {
     /**
      * Mapping from file extensions to file based configuration classes
      */
-
     private static final Map<String, Supplier<FileBasedConfiguration>>
         EXTENSIONS = getExtensionMapping();
 
+    /**
+     * A lock object.
+     */
     private static final Object lock = new Object();
 
     /**
      * The static data for this class
      */
-     private static final Properties PROPERTIES = new Properties();
-
-     static {
-         String res = "/"
-            + DefaultConfigurator.class.getName().replace('.', '/')
-            + ".properties";
-
-        java.io.InputStream rstream = null;
-        try {
-            rstream = DefaultConfigurator.class.getResourceAsStream(res);
-            PROPERTIES.load(rstream);
-        } catch (java.io.IOException ex) {
-            throw new AssertionError(
-                "Could not access ressource file '" + res + "'", ex);
-        } finally {
-            if (rstream != null) {
-                try {
-                    rstream.close();
-                } catch (java.io.IOException ex) {
-                    // Ignore exception
-                    logger.error(
-                        "while closing builtin resource (ignored)",
-                        ex);
-
-                }
-            }
-        }
-     }
+     private static final Properties PROPERTIES =
+        ClassHelper.getClassPathProperties(DefaultConfigurator.class);
 
     /**
      * Creates a new instance of the {@link DefaultConfigurator} class.
@@ -162,8 +138,13 @@ public class DefaultConfigurator implements Configurator {
             return;
         }
 
-        if (this.config == null)
+        if (this.config == null) {
+            logger.debug("No configuration set");
             return;
+        }
+            
+        this.config.getKeys().forEachRemaining((String key) ->
+            logger.debug("KEY: " + key));
 
         runnable.init(this);
         runnable.run();
@@ -202,10 +183,10 @@ public class DefaultConfigurator implements Configurator {
                 return null;
             }
 
-            String[] configs = cmd.getOptionValues(
+            final String[] configs = cmd.getOptionValues(
                 PROPERTIES.getProperty("Option.config.short"));
 
-            Properties props = cmd.getOptionProperties(
+            final Properties props = cmd.getOptionProperties(
                 PROPERTIES.getProperty("Option.define.short"));
 
             return createConfiguration(configs, props);
@@ -238,34 +219,38 @@ public class DefaultConfigurator implements Configurator {
         final CombinedConfiguration result = new CombinedConfiguration(
             new OverrideCombiner());
 
-        for (int i = configFileNames.length - 1; i >= 0; --i) {
-            final String fileName = configFileNames[i];
-            final String ext = FilenameUtils.getExtension(fileName)
-                .toLowerCase();
+        if (configFileNames != null) {
+            for (int i = configFileNames.length - 1; i >= 0; --i) {
+                final String fileName = configFileNames[i];
+                final String ext = FilenameUtils.getExtension(fileName)
+                    .toLowerCase();
 
-            if (EXTENSIONS.containsKey(ext)) {
-                FileBasedConfiguration fb = EXTENSIONS.get(ext).get();
-                FileHandler fh = new FileHandler(fb);
-                try {
-                    fh.load(fileName);
-                } catch (org.apache.commons.configuration2.ex.
-                        ConfigurationException ex) {
+                if (EXTENSIONS.containsKey(ext)) {
+                    FileBasedConfiguration fb = EXTENSIONS.get(ext).get();
+                    FileHandler fh = new FileHandler(fb);
+                    try {
+                        fh.load(fileName);
+                    } catch (org.apache.commons.configuration2.ex.
+                            ConfigurationException ex) {
+                        throw new ConfigurationException(
+                            String.format(
+                                    PROPERTIES.getProperty(
+                                    "Message.config_not_loaded"),
+                                fileName),
+                            ex);
+                    }
+                    result.addConfiguration(fb, fileName);
+                } else {
                     throw new ConfigurationException(
                         String.format(
-                            PROPERTIES.getProperty("Message.config_not_loaded"),
-                            fileName),
-                        ex);
+                            PROPERTIES.getProperty(
+                                "Message.format_not_supported"),
+                            ext
+                    ));
                 }
-                result.addConfiguration(fb, fileName);
-            } else {
-                throw new ConfigurationException(
-                    String.format(
-                        PROPERTIES.getProperty("Message.format_not_supported"),
-                        ext
-                ));
             }
         }
-
+        
         result.addConfiguration(new MapConfiguration(cliProperties),
             "cli");
 
@@ -323,6 +308,8 @@ public class DefaultConfigurator implements Configurator {
             .longOpt(PROPERTIES.getProperty("Option.config.long"))
             .argName(PROPERTIES.getProperty("Option.config.argname"))
             .desc(PROPERTIES.getProperty("Option.config.description"))
+            .hasArgs()
+            .numberOfArgs(1)
             .build();
 
         options.addOption(property);

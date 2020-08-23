@@ -23,7 +23,8 @@
 
 package com.github.anyloop.chassis;
 
-import java.io.File;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +39,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.CombinedConfiguration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
 import org.apache.commons.configuration2.INIConfiguration;
 import org.apache.commons.configuration2.JSONConfiguration;
 import org.apache.commons.configuration2.MapConfiguration;
@@ -49,9 +50,10 @@ import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.XMLPropertiesConfiguration;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.io.FileHandler;
-import org.apache.commons.configuration2.tree.OverrideCombiner;
+import org.apache.commons.configuration2.io.VFSFileSystem;
 import org.apache.commons.configuration2.plist.PropertyListConfiguration;
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
+import org.apache.commons.configuration2.tree.OverrideCombiner;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -89,7 +91,7 @@ public class DefaultConfigurator implements Configurator {
     /**
      * The configuration derived from the command line.
      */
-    private Configuration config = null;
+    private BaseHierarchicalConfiguration config = null;
 
     /**
      * The logger for this class.
@@ -150,6 +152,17 @@ public class DefaultConfigurator implements Configurator {
         runnable.run();
         runnable.terminate();
     }
+    
+    @Override
+    public <T> T create(Class<T> clazz) {
+        final InvocationHandler handler = new ConfiguratorHandler(
+            this.config,
+            "");
+        return (T) Proxy.newProxyInstance(
+            clazz.getClassLoader(),
+            new Class[] {clazz},
+            handler);
+    }
 
     /**
      * Builds a configuration from a list of command line arguments.
@@ -161,7 +174,8 @@ public class DefaultConfigurator implements Configurator {
      *
      * @since 0.1.0
      */
-    private static Configuration createConfigurationFromCommandLine (
+    private static BaseHierarchicalConfiguration
+        createConfigurationFromCommandLine (
             final String[] arguments,
             final ConfigurableRunnable runnable) throws ConfigurationException {
 
@@ -213,7 +227,8 @@ public class DefaultConfigurator implements Configurator {
      * @return a configuration combining all configuration files and
      *         the properties.
      */
-    private static Configuration createConfiguration(
+    private static BaseHierarchicalConfiguration
+        createConfiguration(
             final String[] configFileNames,
             final Properties cliProperties) throws ConfigurationException {
         final CombinedConfiguration result = new CombinedConfiguration(
@@ -228,6 +243,7 @@ public class DefaultConfigurator implements Configurator {
                 if (EXTENSIONS.containsKey(ext)) {
                     FileBasedConfiguration fb = EXTENSIONS.get(ext).get();
                     FileHandler fh = new FileHandler(fb);
+                    fh.setFileSystem(new VFSFileSystem());
                     try {
                         fh.load(fileName);
                     } catch (org.apache.commons.configuration2.ex.

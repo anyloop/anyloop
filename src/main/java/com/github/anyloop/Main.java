@@ -29,10 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.anyloop.chassis.ClassHelper;
-import com.github.anyloop.chassis.ConfigurationException;
 import com.github.anyloop.chassis.Configurator;
 import com.github.anyloop.chassis.ConfigurableRunnable;
 import com.github.anyloop.chassis.DefaultConfigurator;
+import com.github.anyloop.chassis.annotations.ConfigProperty;
+import com.github.anyloop.chassis.annotations.DefaultValue;
 
 /**
  * The main class of the AnyLoop program.
@@ -42,6 +43,18 @@ import com.github.anyloop.chassis.DefaultConfigurator;
  *
  */
 public final class Main {
+    
+    
+    private interface MainConfig {
+        
+        @ConfigProperty("debug")
+        boolean getDebug();
+        
+        @ConfigProperty("jobs")
+        @DefaultValue("1")
+        int getNumberOfJobs();
+    }
+    
     /**
      * The logger for this class.
      */
@@ -67,9 +80,13 @@ public final class Main {
 
         DefaultConfigurator configurator = new DefaultConfigurator(args);
         configurator.run(new ConfigurableRunnable() {
+            
+            private MainConfig config;
 
             @Override
-            public void init(final Configurator c) { }
+            public void init(final Configurator c) {
+                this.config = c.create(MainConfig.class);
+            }
 
             @Override
             public void run() {
@@ -79,6 +96,11 @@ public final class Main {
                     properties.getProperty("year"),
                     properties.getProperty("author"));
                 System.out.println(notice);
+                
+                if (this.config.getDebug()) {
+                    logger.debug("This is a debug message");
+                }
+                logger.info("JOBS = " + this.config.getNumberOfJobs());
             }
 
             @Override
@@ -96,3 +118,5 @@ public final class Main {
         });
     }
 }
+
+

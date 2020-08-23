@@ -47,4 +47,16 @@ public interface Configurator {
      * @since 0.1.0
      */
     void run(ConfigurableRunnable runnable);
+    
+    /**
+     * Creates a dynamic implementation of the given interface
+     * with getter methods returning values from the configuration.
+     * 
+     * @param clazz the interface to be implemented
+     * 
+     * @return a dynamic proxy implementing the given interface
+     * 
+     * @since 0.1.0
+     */
+    <T> T create(Class<T> clazz);
 }

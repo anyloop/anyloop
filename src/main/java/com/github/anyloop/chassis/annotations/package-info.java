@@ -22,9 +22,7 @@
  */
 
 /**
- * This package provides annotations for decorating interfaces which
- * should be implemented by a dynamic proxy.
- *
- * @see com.github.anyloop.chassis.Configurator
+ * This package provides a framework around the domain-specific
+ * task of other packages, such as configuration.
  */
-package com.github.anyloop.chassis.annotations;
+package com.github.anyloop.chassis;

@@ -5,7 +5,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -52,6 +52,7 @@ public interface Configurator {
      * Creates a dynamic implementation of the given interface
      * with getter methods returning values from the configuration.
      * 
+     * @param T implicit generic type of the interface to be implemented
      * @param clazz the interface to be implemented
      * 
      * @return a dynamic proxy implementing the given interface

@@ -5,7 +5,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -82,7 +82,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.1.0
  * @author https://github.com/tom65536
  */
-public class DefaultConfigurator implements Configurator {
+public final class DefaultConfigurator implements Configurator {
     /**
      * The command line arguments passed to the program.
      */
@@ -96,7 +96,7 @@ public class DefaultConfigurator implements Configurator {
     /**
      * The logger for this class.
      */
-    private static final Logger logger =
+    private static final Logger LOGGER =
         LoggerFactory.getLogger(DefaultConfigurator.class);
 
     /**
@@ -128,7 +128,7 @@ public class DefaultConfigurator implements Configurator {
     @Override
     public void run(final ConfigurableRunnable runnable) {
         try {
-            synchronized(lock) {
+            synchronized (lock) {
                 if (this.config == null) {
                     this.config = createConfigurationFromCommandLine(
                         this.args,
@@ -136,17 +136,17 @@ public class DefaultConfigurator implements Configurator {
                 }
             }
         } catch (ConfigurationException exp) {
-            logger.error("Configuration failed", exp);
+            LOGGER.error("Configuration failed", exp);
             return;
         }
 
         if (this.config == null) {
-            logger.debug("No configuration set");
+            LOGGER.debug("No configuration set");
             return;
         }
             
         this.config.getKeys().forEachRemaining((String key) ->
-            logger.debug("KEY: " + key));
+            LOGGER.debug("KEY: " + key));
 
         runnable.init(this);
         runnable.run();
@@ -154,10 +154,9 @@ public class DefaultConfigurator implements Configurator {
     }
     
     @Override
-    public <T> T create(Class<T> clazz) {
+    public <T> T create(final Class<T> clazz) {
         final InvocationHandler handler = new ConfiguratorHandler(
-            this.config,
-            "");
+            this.config);
         return (T) Proxy.newProxyInstance(
             clazz.getClassLoader(),
             new Class[] {clazz},
@@ -175,7 +174,7 @@ public class DefaultConfigurator implements Configurator {
      * @since 0.1.0
      */
     private static BaseHierarchicalConfiguration
-        createConfigurationFromCommandLine (
+        createConfigurationFromCommandLine(
             final String[] arguments,
             final ConfigurableRunnable runnable) throws ConfigurationException {
 

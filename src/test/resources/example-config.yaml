@@ -1,4 +1,4 @@
-# COPYING.properties
+# example-config.yaml
 #
 # Copyright 2020 Thomas Reiter
 #
@@ -6,25 +6,39 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
-#  
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#  
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
-#  
 
-copyright=%s  Copyright (C) %s  %s\n\
-\n\
-    This program comes with ABSOLUTELY NO WARRANTY.\n\
-\n\
-    This program is free software: you can redistribute it and/or modify\n\
-    it under the terms of the GNU General Public License as published by\n\
-    the Free Software Foundation, either version 3 of the License, or\n\
-    (at your option) any later version.\n
-author=Thomas Reiter <http://github.com/tom65536/>
-year=2020
+# Example configuration used for some unit tests.
+
+version: '2.1'
+hash: 0xA1
+authors:
+    - Mickey Mouse
+    - Donald Duck
+    - Daisy Duck
+    
+artifact_info:
+    groupId: com.github.anyloop
+    artifactId: anyloop
+    version: '0.1.0'
+
+dependencies:
+    dependency:
+        - groupId: commons-configuration
+          artifactId: commons-configuration
+          version: '1.8'
+        - groupId: commons-beanutils
+          artifactId: commons-beanutils
+          version: 1.8.0
+        - groupId: commons-jxpath
+          artifactId: commons-jxpath
+          version: '1.3'

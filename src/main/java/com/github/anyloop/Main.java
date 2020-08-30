@@ -1,24 +1,24 @@
 /*
  * Main.java
- * 
+ *
  * Copyright 2020 Thomas Reiter
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
- * 
- * 
+ *
+ *
  */
 
 package com.github.anyloop;
@@ -43,18 +43,18 @@ import com.github.anyloop.chassis.annotations.DefaultValue;
  *
  */
 public final class Main {
-    
-    
+
+
     private interface MainConfig {
-        
+
         @ConfigProperty("debug")
         boolean getDebug();
-        
+
         @ConfigProperty("jobs")
         @DefaultValue("1")
         int getNumberOfJobs();
     }
-    
+
     /**
      * The logger for this class.
      */
@@ -80,7 +80,7 @@ public final class Main {
 
         DefaultConfigurator configurator = new DefaultConfigurator(args);
         configurator.run(new ConfigurableRunnable() {
-            
+
             private MainConfig config;
 
             @Override
@@ -96,7 +96,7 @@ public final class Main {
                     properties.getProperty("year"),
                     properties.getProperty("author"));
                 System.out.println(notice);
-                
+
                 if (this.config.getDebug()) {
                     logger.debug("This is a debug message");
                 }
@@ -118,5 +118,3 @@ public final class Main {
         });
     }
 }
-
-

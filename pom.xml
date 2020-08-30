@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+  - pom.xml
+  -
+  - Copyright 2020 Thomas Reiter
+  -
+  - This program is free software; you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License as published by
+  - the Free Software Foundation; either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with this program; if not, write to the Free Software
+  - Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  - MA 02110-1301, USA.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -9,13 +28,14 @@
     <version>0.1.0-SNAPSHOT</version>
 
     <name>anyloop</name>
-    <url>https://github.com/anyloop/anyloop</url>
-    
+    <url>https://anyloop.github.io/anyloop/</url>
+    <description>Generator of QFT scattering amplitudes</description>
+
     <issueManagement>
         <url>https://github.com/anyloop/anyloop/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
-    
+
     <scm>
         <url>https://github.com/anyloop/anyloop</url>
         <connection>scm:git:https://github.com/anyloop/anyloop.git</connection>
@@ -23,7 +43,7 @@
         <tag>HEAD</tag>
     </scm>
 
-    
+
     <licenses>
         <license>
             <name>GPL-v3.0</name>
@@ -31,12 +51,11 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <developers>
         <developer>
             <name>Thomas Reiter</name>
             <id>tom65536</id>
-            <email>tom65536@web.de</email>
             <roles>
                 <role>Owner</role>
             </roles>
@@ -58,7 +77,7 @@
             <artifactId>slf4j-api</artifactId>
             <version>2.0.0-alpha1</version>
         </dependency>
-        <dependency> 
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.3.0-alpha5</version>
@@ -92,7 +111,12 @@
             <artifactId>commons-io</artifactId>
             <version>2.7</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+            <version>2.6.0</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -139,7 +163,7 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
             </plugin>
-            
+
             <!--plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>downloads-maven-plugin</artifactId>
@@ -178,7 +202,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.7.1</version>
@@ -252,7 +276,51 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>   
+            </plugin>
+                        <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <id>coverage-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>creport</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <!-- Threshold -->
+                    <execution>
+                        <id>coverage-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>CLASS</element>
+                                    <excludes>
+                                        <exclude>com.github.anyloop.*</exclude>
+                                    </excludes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>80%</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -359,11 +427,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jdepend-maven-plugin</artifactId>
                 <version>2.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

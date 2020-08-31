@@ -39,7 +39,7 @@ public final class ClassHelper {
      *
      * @since 0.1.0
      */
-	private ClassHelper() { /* intentionally left blank */ }
+    private ClassHelper() { /* intentionally left blank */ }
 
     /**
      * Obtains a properties resource from the classpath.
@@ -75,7 +75,7 @@ public final class ClassHelper {
      * Obtains a properties resource from the classpath.
      *
      * The resource name is built from the package and class name:
-     * <tt>org.acme.Foo</tt> &rarr& <tt>/org/acme/Foo.properties</tt>
+     * <code>org.acme.Foo</code> &rarr; <code>/org/acme/Foo.properties</code>
      *
      * @param clazz a class of which the classloader is used for
      *        obtaining the resource; also used for deriving the resource

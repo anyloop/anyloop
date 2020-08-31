@@ -66,11 +66,11 @@ import org.slf4j.LoggerFactory;
  *
  * The command line accepts the following arguments:
  * <dl>
- *   <dd><tt>-h, --help</tt></dd><dt>prints a help message and exits</dt>
- *   <dd><tt>-v, --version</tt></dd><dt>prints the version and exits</dt>
- *   <dd><tt>-c, --config</tt></dd><dt>adds a given file or other source
+ *   <dd><code>-h, --help</code></dd><dt>prints a help message and exits</dt>
+ *   <dd><code>-v, --version</code></dd><dt>prints the version and exits</dt>
+ *   <dd><code>-c, --config</code></dd><dt>adds a given file or other source
  *      to the set of configuration files.</dt>
- *   <dd><tt>-D, --define</tt></dd><dt>defines a property directly at the
+ *   <dd><code>-D, --define</code></dd><dt>defines a property directly at the
  *      command line</dt>
  * </dl>
  *
@@ -100,7 +100,7 @@ public final class DefaultConfigurator implements Configurator {
         LoggerFactory.getLogger(DefaultConfigurator.class);
 
     /**
-     * Mapping from file extensions to file based configuration classes
+     * Mapping from file extensions to file based configuration classes.
      */
     private static final Map<String, Supplier<FileBasedConfiguration>>
         EXTENSIONS = getExtensionMapping();
@@ -108,10 +108,10 @@ public final class DefaultConfigurator implements Configurator {
     /**
      * A lock object.
      */
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
 
     /**
-     * The static data for this class
+     * The static data for this class.
      */
      private static final Properties PROPERTIES =
         ClassHelper.getClassPathProperties(DefaultConfigurator.class);
@@ -128,7 +128,7 @@ public final class DefaultConfigurator implements Configurator {
     @Override
     public void run(final ConfigurableRunnable runnable) {
         try {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 if (this.config == null) {
                     this.config = createConfigurationFromCommandLine(
                         this.args,
@@ -144,7 +144,7 @@ public final class DefaultConfigurator implements Configurator {
             LOGGER.debug("No configuration set");
             return;
         }
-            
+
         this.config.getKeys().forEachRemaining((String key) ->
             LOGGER.debug("KEY: " + key));
 
@@ -152,7 +152,7 @@ public final class DefaultConfigurator implements Configurator {
         runnable.run();
         runnable.terminate();
     }
-    
+
     @Override
     public <T> T create(final Class<T> clazz) {
         final InvocationHandler handler = new ConfiguratorHandler(
@@ -265,7 +265,7 @@ public final class DefaultConfigurator implements Configurator {
                 }
             }
         }
-        
+
         result.addConfiguration(new MapConfiguration(cliProperties),
             "cli");
 

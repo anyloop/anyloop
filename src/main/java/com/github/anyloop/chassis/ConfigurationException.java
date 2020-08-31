@@ -56,7 +56,7 @@ public class ConfigurationException extends Exception {
      *
      * @since 0.1.0
      */
-    public ConfigurationException (final String message) {
+    public ConfigurationException(final String message) {
         super(message);
     }
 }

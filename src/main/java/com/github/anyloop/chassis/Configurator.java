@@ -26,37 +26,37 @@ package com.github.anyloop.chassis;
 /**
  * A configurator uses a given configuration to derive implementations
  * from decorated interfaces.
- * 
+ *
  * @since 0.1.0
  * @author https://github.com/tom65536
  */
 public interface Configurator {
-    
+
     /**
      * Interprets the configuration and decides how to invoke
      * the given runnable.
-     * 
+     *
      * Depending on the configuration and/or the command line arguments
      * the methods of the runnable may not be invoked at all.
      * For example, if an option is called that terminates the program
-     * (<tt>--help</tt>, <tt>--version</tt>), the runnable
-     * is <b>not</b> started. Otherwise the runnable is
+     * (<code>--help</code>, <code>--version</code>), the runnable
+     * is <em>not</em> started. Otherwise the runnable is
      * initialized, run and eventually terminated in this order.
-     * 
+     *
      * @param runnable the runnable that is run with this configurator.
      * @since 0.1.0
      */
     void run(ConfigurableRunnable runnable);
-    
+
     /**
      * Creates a dynamic implementation of the given interface
      * with getter methods returning values from the configuration.
-     * 
-     * @param T implicit generic type of the interface to be implemented
+     *
+     * @param <T> implicit generic type of the interface to be implemented
      * @param clazz the interface to be implemented
-     * 
+     *
      * @return a dynamic proxy implementing the given interface
-     * 
+     *
      * @since 0.1.0
      */
     <T> T create(Class<T> clazz);
